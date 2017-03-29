@@ -1,11 +1,8 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+package com.zfh.test;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -18,143 +15,149 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-/*Ö÷Òª¹¦ÄÜ£ºmainº¯Êı½ÓÊÕ1»ò2¸ö²ÎÊı£¬½âÎöxmlÎÄ¼şÉú³ÉcfgÅäÖÃÎÄ¼ş
- * 1.¶¨ÒåPartÀà°ü×°ĞèÒªÌáÈ¡µÄ¸÷¸öxmlÔªËØ£¬List<Part>·â×°Part±ãÓÚÊä³ö
- * 3.ÅĞ¶Ï½ÓÊÕµ½µÄ²ÎÊı1ºÍ²ÎÊı2£¬²ÎÊı1ÎªÎÄ¼şÊ±£¬½âÎöµ±Ç°ÎÄ¼ş£»²ÎÊı1ÎªÎÄ¼ş¼ĞÊ±£»½âÎöÎÄ¼ş¼ĞÏÂµÄËùÓĞxmlÎÄ¼ş
- * 	²ÎÊı2Îª¿ÕÊ±£¬½âÎöµ½µ±Ç°ÎÄ¼ş¼ĞÏÂÍ¬Ãû.cfgÎÄ¼ş£»²ÎÊı2Îª´æÔÚµÄÎÄ¼ş¼ĞÊ±£¬½âÎöµ½ÎÄ¼ş¼ĞÏÂ£»²ÎÊı2Îª.cfgÎÄ¼şÊ±½âÎöÎª¸ÃÃû³ÆµÄÎÄ¼ş
- * 4.½âÎöxml£¬¶¨ÒåXmlHandlerÀà¼Ì³ĞDefaultHandler£¬¾ßÓĞ½âÎöxmlµÄ¹¦ÄÜ£¬Ö»½ÓÊÕÔ­Ê¼ÎÄ¼şÂ·¾¶½øĞĞ½âÎö£¬½âÎöºó´æÈëListÖĞ
- * ÉúÃüÖÜÆÚÈçÏÂ£º
- * startDocument() -->  startElement(String uri, String localName, String qName, Attributes attributes) ½âÎö³öÔªËØ¹Ø´æ´¢  -->  characters(char[] ch, int start, int length)½âÎöÖµ£¬Î´Ê¹ÓÃ
- * -->  startDocument()½âÎöÍê³É
- * 5.½âÎöÍê³ÉºóĞ´ÎÄ¼ş£ºµÚÒ»ĞĞ¹Ì¶¨ÄÚÈİ£¬µÚ¶şĞĞ¿ªÊ¼£¬ÒÀ´ÎĞ´ÈëMapÖĞÔªËØÄÚÈİ£¬²¢»»Ëã
- * 6.Êä³öµ½²ÎÊı£²Â·¾¶
+/*ä¸»è¦åŠŸèƒ½ï¼šmainå‡½æ•°æ¥æ”¶1æˆ–2ä¸ªå‚æ•°ï¼Œè§£æxmlæ–‡ä»¶ç”Ÿæˆcfgé…ç½®æ–‡ä»¶
+ * 1.å®šä¹‰Partç±»åŒ…è£…éœ€è¦æå–çš„å„ä¸ªxmlå…ƒç´ ï¼ŒList<Part>å°è£…Partä¾¿äºè¾“å‡º
+ * 2.åˆ¤æ–­æ¥æ”¶åˆ°çš„å‚æ•°1å’Œå‚æ•°2ï¼Œå‚æ•°1ä¸ºæ–‡ä»¶æ—¶ï¼Œè§£æå½“å‰æ–‡ä»¶ï¼›å‚æ•°1ä¸ºæ–‡ä»¶å¤¹æ—¶ï¼›è§£ææ–‡ä»¶å¤¹ä¸‹çš„æ‰€æœ‰xmlæ–‡ä»¶
+ * 	å‚æ•°2ä¸ºç©ºæ—¶ï¼Œè§£æåˆ°å½“å‰æ–‡ä»¶å¤¹ä¸‹åŒå.cfgæ–‡ä»¶ï¼›å‚æ•°2ä¸ºå­˜åœ¨çš„æ–‡ä»¶å¤¹æ—¶ï¼Œè§£æåˆ°æ–‡ä»¶å¤¹ä¸‹ï¼›å‚æ•°2ä¸º.cfgæ–‡ä»¶æ—¶è§£æä¸ºè¯¥åç§°çš„æ–‡ä»¶
+ * 3.è§£æxmlï¼Œå®šä¹‰XmlHandlerç±»ç»§æ‰¿DefaultHandlerï¼Œå…·æœ‰è§£æxmlçš„åŠŸèƒ½ï¼Œåªæ¥æ”¶åŸå§‹æ–‡ä»¶è·¯å¾„è¿›è¡Œè§£æï¼Œè§£æåå­˜å…¥Listä¸­
+ * ç”Ÿå‘½å‘¨æœŸå¦‚ä¸‹ï¼š
+ * startDocument() -->  startElement(String uri, String localName, String qName, Attributes attributes) è§£æå‡ºå…ƒç´ å…³å­˜å‚¨  -->  characters(char[] ch, int start, int length)è§£æå€¼ï¼Œæœªä½¿ç”¨
+ * -->  startDocument()è§£æå®Œæˆ
+ * 4.è§£æå®Œæˆåå†™æ–‡ä»¶ï¼šç¬¬ä¸€è¡Œå›ºå®šå†…å®¹ï¼Œç¬¬äºŒè¡Œå¼€å§‹ï¼Œä¾æ¬¡å†™å…¥Mapä¸­å…ƒç´ å†…å®¹ï¼Œå¹¶æ¢ç®—
+ * 5.è¾“å‡ºåˆ°å‚æ•°ï¼’è·¯å¾„
  * 
  * 
  */
 
-public class DoXml{				//Ö÷º¯Êı
-	//args[0]		args[1]
-		public static void main(String[] args) {
-			// TODO Auto-generated method stub
-			try {
-				judgeParse(args);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+public class DoXml { // ä¸»å‡½æ•°
+	// args[0] args[1]
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try {
+			judgeParse(args);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		public static void judgeParse(String[] args) throws Exception{
-			switch(args.length){
-			case 1:	//1¸ö²ÎÊı
-				File file = new File(args[0]);
-				if(file.exists()){
-					if(file.isDirectory()){	//ÊÇÒ»¸öÄ¿Â¼£¬ÁĞ³öËùÓĞxmlÎÄ¼ş£¬½âÎöµ½µ±Ç°Ä¿Â¼
-						File files[] = file.listFiles();
-						for(int i = 0;i < files.length; i++){
-							if(files[i].getName().endsWith(".xml")){	//È¡³öxmlÎÄ¼ş
-								doIt(files[i].getPath(),files[i].getPath().replaceAll(".xml", ".cfg"));
+	}
+
+	public static void judgeParse(String[] args) throws Exception {
+		switch (args.length) {
+		case 1: // 1ä¸ªå‚æ•°
+			File file = new File(args[0]);
+			if (file.exists()) {
+				if (file.isDirectory()) { // æ˜¯ä¸€ä¸ªç›®å½•ï¼Œåˆ—å‡ºæ‰€æœ‰xmlæ–‡ä»¶ï¼Œè§£æåˆ°å½“å‰ç›®å½•
+					File files[] = file.listFiles();
+					for (int i = 0; i < files.length; i++) {
+						if (files[i].getName().endsWith(".xml")) { // å–å‡ºxmlæ–‡ä»¶
+							doIt(files[i].getPath(), files[i].getPath().replaceAll(".xml", ".cfg"));
+						}
+					}
+				} else { // æ˜¯ä¸€ä¸ªæ–‡ä»¶
+					doIt(file.getPath(), file.getPath().replaceAll(".xml", ".cfg"));
+				}
+			} else {
+				System.out.println("æ‰€é€‰åŸæ–‡ä»¶æˆ–æ–‡ä»¶å¤¹ä¸å­˜åœ¨");
+			}
+			break;
+		case 2: // 2ä¸ªå‚æ•°
+			File file1 = new File(args[0]);
+			File file2 = new File(args[1]);
+			if (file1.exists()) {
+				if (file1.isDirectory()) { // æ˜¯ä¸€ä¸ªç›®å½•ï¼Œåˆ—å‡ºæ‰€æœ‰xmlæ–‡ä»¶ï¼Œè§£æåˆ°å½“å‰ç›®å½•
+					File files[] = file1.listFiles();
+					for (int i = 0; i < files.length; i++) {
+						if (files[i].getName().endsWith(".xml")) { // å–å‡ºxmlæ–‡ä»¶
+							if (file2.isDirectory()) {
+								doIt(files[i].getPath(), (file2.getPath() + File.separator + files[i].getName())
+										.replaceAll(".xml", ".cfg"));
+							} else {
+								System.out.println("å‚æ•°ï¼‘ä¸ºç›®å½•æ—¶ï¼Œå‚æ•°ï¼’ä¸€å®šæ˜¯ä¸€ä¸ªç›®å½•");
 							}
 						}
-					}else{	//ÊÇÒ»¸öÎÄ¼ş
-						doIt(file.getPath(),file.getPath().replaceAll(".xml", ".cfg"));
 					}
-				}else{
-					System.out.println("ËùÑ¡Ô­ÎÄ¼ş»òÎÄ¼ş¼Ğ²»´æÔÚ");
+				} else { // æ˜¯ä¸€ä¸ªæ–‡ä»¶
+					doIt(file2.getPath(), file2.getPath().replaceAll(".xml", ".cfg"));
 				}
-				break;
-			case 2:	//2¸ö²ÎÊı
-				File file1 = new File(args[0]);
-				File file2 = new File(args[1]);
-				if(file1.exists()){
-					if(file1.isDirectory()){	//ÊÇÒ»¸öÄ¿Â¼£¬ÁĞ³öËùÓĞxmlÎÄ¼ş£¬½âÎöµ½µ±Ç°Ä¿Â¼
-						File files[] = file1.listFiles();
-						for(int i = 0;i < files.length; i++){
-							if(files[i].getName().endsWith(".xml")){	//È¡³öxmlÎÄ¼ş
-								if(file2.isDirectory()){
-									doIt(files[i].getPath(),(file2.getPath()+File.separator+files[i].getName()).replaceAll(".xml", ".cfg"));
-								}else{
-									System.out.println("²ÎÊı£±ÎªÄ¿Â¼Ê±£¬²ÎÊı£²Ò»¶¨ÊÇÒ»¸öÄ¿Â¼");
-								}							
-							}
-						}
-					}else{	//ÊÇÒ»¸öÎÄ¼ş
-						doIt(file2.getPath(),file2.getPath().replaceAll(".xml", ".cfg"));
-					}
-				}else{
-					System.out.println("ËùÑ¡Ô­ÎÄ¼ş»òÎÄ¼ş¼Ğ²»´æÔÚ");
-				}
-				break;
-			default:
-					System.out.println("²ÎÊıÊäÈë´íÎó£¡");
-				break;
+			} else {
+				System.out.println("æ‰€é€‰åŸæ–‡ä»¶æˆ–æ–‡ä»¶å¤¹ä¸å­˜åœ¨");
 			}
+			break;
+		default:
+			System.out.println("å‚æ•°è¾“å…¥é”™è¯¯ï¼");
+			break;
 		}
-		
-		public static void doIt(String src,String des) throws Exception{	//Ö÷º¯Êı½âÎö
-			XmlHandler handler = XmlHandler.getInstance();
-			List<Part> part = handler.getXmlParts(src);
-			StringBuffer firstLine = new StringBuffer("mtd_name\tmtd_type\tmtd_version\tstart_address\tfs_path\tmtd_file size\n");	//µÚÒ»ĞĞÄÚÈİ
-			OutputStream out = null;
-			for(Part p : part){
-				File desFile = new File(des);
-				 if (desFile.exists()) {  
-		                  
-		            } else {  
-		                desFile.createNewFile();// ²»´æÔÚÔò´´½¨  
-		            }
-				 out = new FileOutputStream(desFile);
-				//boot       	   3  20201  0x0         no fastboot.bin  0x400000
-				firstLine.append(p.getPartitionName()+"\t3\t20201\t0x"+p.getStart()+"\tno\t"+p.getSelectFile()+"\t0x"+p.getLength()+"\n");		//ºóÃæÎÄ±¾ÄÚÈİ
+	}
+
+	public static void doIt(String src, String des) throws Exception { // ä¸»å‡½æ•°è§£æ
+		XmlHandler handler = XmlHandler.getInstance();
+		List<Part> part = handler.getXmlParts(src);
+		StringBuffer firstLine = new StringBuffer(
+				"mtd_name\tmtd_type\tmtd_version\tstart_address\tfs_path\tmtd_file size\n"); // ç¬¬ä¸€è¡Œå†…å®¹
+		OutputStream out = null;
+		for (Part p : part) {
+			File desFile = new File(des);
+			if (desFile.exists()) {
+
+			} else {
+				desFile.createNewFile();// ä¸å­˜åœ¨åˆ™åˆ›å»º
 			}
-			byte b[] = firstLine.toString().getBytes();
-			out.write(b);
-			out.close();
+			out = new FileOutputStream(desFile);
+			// boot 3 20201 0x0 no fastboot.bin 0x400000
+			firstLine.append(p.getPartitionName() + "\t3\t20201\t0x" + p.getStart() + "\tno\t" + p.getSelectFile()
+					+ "\t0x" + p.getLength() + "\n"); // åé¢æ–‡æœ¬å†…å®¹
 		}
-		
+		byte b[] = firstLine.toString().getBytes();
+		out.write(b);
+		out.close();
+	}
 }
 
-//¼Ì³ĞDefaultHandlerºó£¬¿ÉÒÔ½âÎöxmlÎÄ¼ş
-class XmlHandler extends DefaultHandler{
+// ç»§æ‰¿DefaultHandleråï¼Œå¯ä»¥è§£æxmlæ–‡ä»¶
+class XmlHandler extends DefaultHandler {
 	private Part xmlPart = null;
 	private List<Part> xmlParts = null;
-	private String preTag = null;	//¼ÇÂ¼½âÎöÊ±µÄÉÏÒ»¸ö½ÚµãÃû³Æ
-	private int count = 0;	//±ê¼ÇµÚ¼¸¸öPart½Úµã
+	private String preTag = null; // è®°å½•è§£ææ—¶çš„ä¸Šä¸€ä¸ªèŠ‚ç‚¹åç§°
+	private int count = 0; // æ ‡è®°ç¬¬å‡ ä¸ªPartèŠ‚ç‚¹
+	private String start = null;	//èµ·å§‹ä½ç½®
+	private String len = null;		//æ–‡ä»¶é•¿
 	private static XmlHandler instance;
-	
-	private XmlHandler(){
+
+	private XmlHandler() {
 	}
-	public static XmlHandler getInstance(){
-		if(instance == null){
+
+	public static XmlHandler getInstance() {
+		if (instance == null) {
 			instance = new XmlHandler();
 		}
-		
+
 		return instance;
 	}
-	public  void judgeParse(String[] args) {
+
+	public void judgeParse(String[] args) {
 		// TODO Auto-generated method stub
-		switch(args.length){
+		switch (args.length) {
 		case 1:
 			File src = new File(args[0]);
-			if(src!=null){
-				if(src.isDirectory()){	//Ä¿Â¼
-					
-				}else if(args[0].endsWith(".xml")){	//xmlÎÄ¼ş
-					
+			if (src != null) {
+				if (src.isDirectory()) { // ç›®å½•
+
+				} else if (args[0].endsWith(".xml")) { // xmlæ–‡ä»¶
+
 				}
 			}
 			break;
-		}			
+		}
 	}
-	
-	//´«Èë²ÎÊı£¬½âÎöxml
-	public List<Part> getXmlParts(String xmlSrc) throws Exception{  
+
+	// ä¼ å…¥å‚æ•°ï¼Œè§£æxml
+	public List<Part> getXmlParts(String xmlSrc) throws Exception {
 		InputStream in = new FileInputStream(xmlSrc);
-        SAXParserFactory factory = SAXParserFactory.newInstance();  
-        SAXParser parser = factory.newSAXParser();  
-        parser.parse(in, instance);			//Ìá½»½âÎöÈÎÎñ
-        return instance.getXmlParts();
-    }
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(in, instance); // æäº¤è§£æä»»åŠ¡
+		return instance.getXmlParts();
+	}
 
 	public List<Part> getXmlParts() {
 		return xmlParts;
@@ -165,12 +168,12 @@ class XmlHandler extends DefaultHandler{
 	}
 
 	@Override
-	//£±¡¢¶ÁÈë<?xml.....>Ê±£¬»áµ÷ÓÃstartDocument()·½·¨
+	// ï¼‘ã€è¯»å…¥<?xml.....>æ—¶ï¼Œä¼šè°ƒç”¨startDocument()æ–¹æ³•
 	public void startDocument() throws SAXException {
 		// TODO Auto-generated method stub
 		super.startDocument();
 		xmlParts = new ArrayList<Part>();
-		System.out.println("¿ªÊ¼½âÎöÎÄ¼ş¡£¡£¡£¡£¡£¡£");
+		System.out.println("å¼€å§‹è§£ææ–‡ä»¶ã€‚ã€‚ã€‚ã€‚ã€‚ã€‚");
 	}
 
 	@Override
@@ -180,26 +183,42 @@ class XmlHandler extends DefaultHandler{
 	}
 
 	@Override
-	//£²¡¢¶ÁÈ¡µ½Ò»¸ö½Úµã£¬ÔËĞĞµ½´Ë
+	// ï¼’ã€è¯»å–åˆ°ä¸€ä¸ªèŠ‚ç‚¹ï¼Œè¿è¡Œåˆ°æ­¤
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		// TODO Auto-generated method stub
 		super.startElement(uri, localName, qName, attributes);
-		if("Part".equals(qName)){		//¶ÁÈ¡µ½Part½Úµã
+		if ("Part".equals(qName)) { // è¯»å–åˆ°PartèŠ‚ç‚¹
 			xmlPart = new Part();
-			xmlPart.setPartitionName(attributes.getValue(1));
-			//xmlPart.setStart(attributes.getValue(4));
-			String start = ("0".equals(attributes.getValue(4)) )?"0":Long.toHexString(Long.valueOf(attributes.getValue(4).replaceAll("M", ""))*1024*1024).toString();
-			String len = Long.toHexString(Long.valueOf(attributes.getValue(5).replaceAll("M", ""))*1024*1024).toString();
+			if("fastboot".equals(attributes.getValue(1))){	//æ­¤å¤„ç”±äºfastbootä¸€èˆ¬æ˜¯é”™çš„ï¼Œç›´æ¥å†™ä¸ºboot
+				xmlPart.setPartitionName("boot");
+			}else{
+				xmlPart.setPartitionName(attributes.getValue(1));
+			}
+			// xmlPart.setStart(attributes.getValue(4));
+			if("0".equals(attributes.getValue(4))){		//è¶…å§‹ä½ç½®æ˜¯0
+				start = "0";
+			}else if(attributes.getValue(4).endsWith("K")){
+				start = Long.toHexString(Long.valueOf(attributes.getValue(4).replaceAll("K", "")) * 1024).toString();
+			}else if(attributes.getValue(4).endsWith("M")){
+				start = Long.toHexString(Long.valueOf(attributes.getValue(4).replaceAll("M", "")) * 1024 * 1024).toString();
+			}
+			
+			if("0".equals(attributes.getValue(5))){		
+				len = "0";
+			}else if(attributes.getValue(5).endsWith("K")){
+				len = Long.toHexString(Long.valueOf(attributes.getValue(5).replaceAll("K", "")) * 1024).toString();
+			}else if(attributes.getValue(5).endsWith("M")){
+				len = Long.toHexString(Long.valueOf(attributes.getValue(5).replaceAll("M", "")) * 1024 * 1024).toString();
+			}
 			xmlPart.setStart(start);
 			xmlPart.setLength(len);
-			//xmlPart.setLength(attributes.getValue(5));
+			
 			if(attributes.getValue(6) != null && attributes.getValue(6) != ""){
 				xmlPart.setSelectFile(attributes.getValue(6));
 			}else{
 				xmlPart.setSelectFile("null");
-			}
-						
-			System.out.println(attributes.getValue(6));				//Êı¾İ½âÎöÍêÁË£¬¸Ã´æÈëListÖĞ
+			}			
+			System.out.println(attributes.getValue(6));
 			xmlParts.add(xmlPart);
 		}
 		count++;
@@ -209,11 +228,11 @@ class XmlHandler extends DefaultHandler{
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		// TODO Auto-generated method stub
 		super.endElement(uri, localName, qName);
-		if("Partition_Info".equals(qName)){
+		if ("Partition_Info".equals(qName)) {
 			xmlPart = null;
 		}
 		count = 0;
-		System.out.println("½âÎöÍê³É£¬ÕıÔÚÉú³É¡£¡£¡£¡£¡£¡£");
+		System.out.println("è§£æå®Œæˆï¼Œæ­£åœ¨ç”Ÿæˆã€‚ã€‚ã€‚ã€‚ã€‚ã€‚");
 	}
 
 	@Override
@@ -223,62 +242,78 @@ class XmlHandler extends DefaultHandler{
 	}
 }
 
-	//PartÀà£¬ÓÃÀ´×é×°Êı¾İ£¬°ü×°elementÔªËØ
-class Part{
-	//<Part Sel="1" PartitionName="boot" FlashType="emmc" FileSystem="none" Start="0" Length="4M" SelectFile="fastboot.bin"/>
-	//ÒÔÉÏ¶ÔÓ¦vale0      1										2								3								4				5						6
-	//ÓĞÓÃµÄÎªPartitionName,start,length,selectFile£¬¶ÔÓ¦vale 1		4		5		6
+// Partç±»ï¼Œç”¨æ¥ç»„è£…æ•°æ®ï¼ŒåŒ…è£…elementå…ƒç´ 
+class Part {
+	// <Part Sel="1" PartitionName="boot" FlashType="emmc" FileSystem="none"
+	// Start="0" Length="4M" SelectFile="fastboot.bin"/>
+	// ä»¥ä¸Šå¯¹åº”vale0 1 2 3 4 5 6
+	// æœ‰ç”¨çš„ä¸ºPartitionName,start,length,selectFileï¼Œå¯¹åº”vale 1 4 5 6
 	private int sel;
-	private String partitionName,flashType,fileSystem,selectFile,start,length;
+	private String partitionName, flashType, fileSystem, selectFile, start, length;
+
 	/**
 	 * @return the partitionName
 	 */
 	public String getPartitionName() {
 		return partitionName;
 	}
+
 	/**
-	 * @param partitionName the partitionName to set
+	 * @param partitionName
+	 *            the partitionName to set
 	 */
 	public void setPartitionName(String partitionName) {
 		this.partitionName = partitionName;
 	}
+
 	/**
 	 * @return the selectFile
 	 */
 	public String getSelectFile() {
 		return selectFile;
 	}
+
 	/**
-	 * @param selectFile the selectFile to set
+	 * @param selectFile
+	 *            the selectFile to set
 	 */
 	public void setSelectFile(String selectFile) {
 		this.selectFile = selectFile;
 	}
+
 	/**
 	 * @return the start
 	 */
 	public String getStart() {
 		return start;
 	}
+
 	/**
-	 * @param start the start to set
+	 * @param start
+	 *            the start to set
 	 */
 	public void setStart(String start) {
 		this.start = start;
 	}
+
 	/**
 	 * @return the length
 	 */
 	public String getLength() {
 		return length;
 	}
+
 	/**
-	 * @param length the length to set
+	 * @param length
+	 *            the length to set
 	 */
 	public void setLength(String length) {
 		this.length = length;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -286,5 +321,5 @@ class Part{
 		// TODO Auto-generated method stub
 		return super.toString();
 	}
-	
+
 }
